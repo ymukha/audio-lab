@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     auto input = makeSine(1000.0f, amplitude, duration, sampleRate, channels);
 
     // Prepare out buffer for FIR
-    AudioBuffer output{input.sampleRate, input.channels, input.FrameSize};
+    AudioBuffer output{input.sampleRate, input.channels, input.frameCount};
 
     // FIR moving avg (5 taps)
     const size_t taps{ 5 };

@@ -5,31 +5,35 @@ void applyFIR(const AudioBuffer& in,
               const float *h,
               size_t taps)
 {
-    if (in.channels != out.channels
-        || in.sampleRate != out.sampleRate)
+    if (taps == 0
+        || h == nullptr)
         return;
 
+    out.channels = in.channels;
+    out.sampleRate = in.sampleRate;
+    out.frameCount = in.frameCount;    
+
     out.data.clear();
-    out.data.resize(in.data.size());
+    out.data.assign(in.data.size(), 0.0f);
     
     const size_t channels { in.channels };
-    const size_t frames = in.data.size() / in.channels;
+    const size_t frames = in.frameCount;
 
     for (size_t channel = 0; channel < channels; ++channel)
     {
-        for (size_t sample = 0; sample < frames; ++sample)
+        for (size_t frame = 0; frame < frames; ++frame)
         {
             float acc{ 0.0f };
 
             for (size_t tap = 0; tap < taps; ++tap)
             {
-                if (tap > sample)
+                if (tap > frame)
                     continue;
                 
-                acc += h[tap] * in.data[channel + (sample - tap) * channels];
+                acc += h[tap] * in.data[channel + (frame - tap) * channels];
             }
 
-            out.data[channel + sample * channels] = acc;
+            out.data[channel + frame * channels] = acc;
         }
     }
 }

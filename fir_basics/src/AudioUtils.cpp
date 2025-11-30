@@ -16,18 +16,18 @@ AudioBuffer makeSine(float frequency,
     const float dT{1.0f / sampleRate};
     const float twoPiF{2.0f * float(M_PI) * frequency};
 
-    AudioBuffer buffer { sampleRate, channels, channels * sizeof(float) };
-    
-
     size_t frames = static_cast<size_t>(durationSeconds * static_cast<double>(sampleRate));
+
+    AudioBuffer buffer { sampleRate, channels, frames };
+
     buffer.data.resize(frames * channels);
 
-    for (size_t n = 0; n < frames; n += channels)
+    for (size_t n = 0; n < frames; ++n)
     {
         const float sample{ amplitude * std::sin(twoPiF * n * dT)};
 
         for(size_t channel = 0; channel < channels; ++channel)
-            buffer.data[n + channel] = sample;
+            buffer.data[n * channels + channel] = sample;
     }
 
     return buffer;
