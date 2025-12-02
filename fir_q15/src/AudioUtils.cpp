@@ -1,6 +1,7 @@
 #include "AudioUtils.h"
 
 #include <cmath>
+#include <random>
 
 
 AudioBuffer<float> makeSine(float frequency,
@@ -9,7 +10,6 @@ AudioBuffer<float> makeSine(float frequency,
                      size_t sampleRate,
                      size_t channels)
 {
-    const float phase{0.0f};
     const float dT{1.0f / sampleRate};
     const float twoPiF{2.0f * float(M_PI) * frequency};
 
@@ -26,6 +26,45 @@ AudioBuffer<float> makeSine(float frequency,
         for(size_t channel = 0; channel < channels; ++channel)
             buffer.data[n * channels + channel] = sample;
     }
+
+    return buffer;
+}
+
+AudioBuffer<float> makeDualSine(float freq1,
+                     float freq2,
+                     float amplitude,
+                     float durationSeconds,
+                     size_t sampleRate,
+                     size_t channels)
+{
+    auto buf1 = makeSine(freq1, amplitude, durationSeconds, sampleRate, channels);
+    auto buf2 = makeSine(freq2, amplitude, durationSeconds, sampleRate, channels);
+
+    const size_t N = buf1.data.size();
+
+    for (size_t i = 0; i < N; ++i)
+        buf1.data[i] = (buf1.data[i] + buf2.data[i]) * 0.5f;
+    
+    return buf1;
+}
+
+AudioBuffer<float> makeWhiteNoise(float amplitude,
+                     float durationSeconds,
+                     size_t sampleRate,
+                     size_t channels)
+{
+    size_t frames = static_cast<size_t>(durationSeconds * static_cast<double>(sampleRate));
+
+    AudioBuffer<float> buffer{ sampleRate, channels, frames };
+
+    buffer.data.resize(frames * channels);
+
+    std::mt19937 rng(12345);
+    std::uniform_real_distribution<float> dist(-1.f, 1.f);
+
+    for (size_t n = 0; n < frames; ++n)
+        for(size_t channel = 0; channel < channels; ++channel)
+            buffer.data[n * channels + channel] = amplitude * dist(rng);
 
     return buffer;
 }

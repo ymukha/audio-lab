@@ -12,6 +12,18 @@ AudioBuffer<float> makeSine(float frequency,
                      size_t sampleRate,
                      size_t channels);
 
+AudioBuffer<float> makeDualSine(float freq1,
+                     float freq2,
+                     float amplitude,
+                     float durationSeconds,
+                     size_t sampleRate,
+                     size_t channels);
+
+AudioBuffer<float> makeWhiteNoise(float amplitude,
+                     float durationSeconds,
+                     size_t sampleRate,
+                     size_t channels);
+
 AudioBuffer<q15_t> bufferFromFloat(const AudioBuffer<float>& buffer);
 AudioBuffer<float> bufferToFloat(const AudioBuffer<q15_t>& buffer);
 
